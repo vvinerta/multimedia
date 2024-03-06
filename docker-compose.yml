@@ -1,0 +1,50 @@
+version: '3'
+
+networks:
+  multimedia:
+
+services:
+  database:
+    container_name: database
+    image: mariadb:10.6.16
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: multimedia
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./bbdd/multimedia.sql:/docker-entrypoint-initdb.d/multimedia.sql
+    networks:
+      - multimedia
+
+  phpmyadmin:
+    container_name: "phpmyadmin"
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - "90:80"
+    links:
+      - database:database
+    environment:
+      PMA_ARBITRARY: 1
+    depends_on:
+      - database
+    networks:
+      - multimedia
+#
+ # back:
+ #   container_name: "back"
+ #   build:
+ #     context: .
+ #     dockerfile: Dockerfile-back
+ #   ports:
+ #     - "8080:8080"
+ #   depends_on:
+ #     - database
+ #   volumes:
+ #     - ./back/target/back-0.0.1-SNAPSHOT.jar:/app/app.jar
+ #   networks:
+ #     - multimedia
+ #   links:
+ #     - database:database
+#
+
